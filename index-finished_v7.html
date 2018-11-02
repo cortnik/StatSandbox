@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaflet Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" />
+</head>
+<body>
+    <!-- Our web map and content will go here -->
+    <div id="map" style="height: 700px"></div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+    <script>
+		// Create variable to hold map element, give initial settings to map
+		var map = L.map('map',{ center: [42.3876,-71.0995], zoom: 14});
+		
+		// Add OpenStreetMap tile layer to map element
+		L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=sk.eyJ1IjoiY2tkZXNpciIsImEiOiJjam55c2VkamMwdzV6M3FvMGRicGY1eGxlIn0.CmzLnPZnF3pgbRjEBi3P0w', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 14,
+    id: 'mapbox.streets',
+    accessToken: 'sk.eyJ1IjoiY2tkZXNpciIsImEiOiJjam55c2VkamMwdzV6M3FvMGRicGY1eGxlIn0.CmzLnPZnF3pgbRjEBi3P0w'}).addTo(map);
+		
+		// Create point feature for Somerville City Hall
+		var myDataPoint = L.marker([42.3868444,-71.1003077]).addTo(map);
+		
+		// // Create line feature for Mass Ave Bridge, style and add to map
+		// var myDataLine = L.polyline([[42.357227, -71.092631], [42.351411, -71.089723]],
+		//     {color: 'red', weight: 10}).addTo(map);
+		
+		// // Create area feature for MIT, style and add to map
+		// var myArea = L.polygon([[42.353770, -71.103606], [42.355447, -71.104475],
+		//     [42.362681, -71.089830], [42.361829, -71.079230]], 
+		//     {color: 'blue', weight: 4}).addTo(map);
+		
+		// Bind popup to data point object
+		myDataPoint.bindPopup("<h3>Somerville City Hall</h3><p>SomerVision 2030 HQ</p>");
+		
+		// // Bind popup to line object
+		// myDataLine.bindPopup("Mass Ave Bridge");
+		
+		// // Bind popup to area object
+		// myArea.bindPopup("MIT Campus");
+		
+		// Create an Empty Popup
+		var popup = L.popup();
+
+		// Write function to set Properties of the Popup
+		function onMapClick(e) {
+		    popup
+		        .setLatLng(e.latlng)
+		        .setContent("No SomerVision projects here")
+		        .openOn(map);
+		}
+
+		// Listen for a click event on the Map element
+		map.on('click', onMapClick);
+
+// 		//write a function to set color for parcels
+// 		function getColor(d) {
+// 			return d > 50 ? '#800026' :
+// 			d <50 ? '#BD0026' :
+// 		}
+
+// 		// define a style function
+// 		function style(feature) {
+//     return {
+//         fillColor: getColor(feature.properties.right_net_new_housing_units___total),
+//         weight: 2,
+//         opacity: 1,
+//         color: 'white',
+//         dashArray: '3',
+//         fillOpacity: 0.7
+//     };
+// }
+
+		// load GeoJSON from an external file
+		$.getJSON("parcels.geojson",function(data){
+		    // add GeoJSON layer to the map once the file is loaded
+		    L.geoJson(data,{
+		        onEachFeature: function (feature, layer) {
+		            layer.bindPopup(feature.properties.right_address);
+		        }
+		    }).addTo(map);
+		});
+	</script>
+</body>
+</html>
+
+
+
